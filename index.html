@@ -1,0 +1,309 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AHAVA Record Label</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <!-- Header -->
+  <header class="bg-black text-white sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <img src="https://via.placeholder.com/150x50?text=AHAVA+Logo" alt="AHAVA Logo" class="h-12">
+      <nav class="space-x-6">
+        <a href="#home" class="hover:text-gray-300">Home</a>
+        <a href="#about" class="hover:text-gray-300">About Us</a>
+        <a href="#artists" class="hover:text-gray-300">Artists</a>
+        <a href="#music" class="hover:text-gray-300">Music</a>
+        <a href="#submit" class="hover:text-gray-300">Submit Your Music</a>
+        <a href="#contact" class="hover:text-gray-300">Contact Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="relative bg-cover bg-center h-screen" style="background-image: url('https://via.placeholder.com/1920x1080?text=Artists+Performing');">
+    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="text-center text-white">
+        <h1 class="text-5xl font-bold mb-4">Discover. Develop. Promote.</h1>
+        <p class="text-xl mb-6">Join the AHAVA Record Label family and let your music shine.</p>
+        <a href="#submit" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700">Submit Your Music</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Artists Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">Featured Artists</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <img src="https://via.placeholder.com/300x300?text=Artist+1" alt="Artist 1" class="rounded-full mx-auto mb-4">
+          <h3 class="text-xl font-semibold">Artist Name 1</h3>
+          <p class="text-gray-600 mb-4">Talented Afro pop artist with a unique sound.</p>
+          <a href="#" class="text-red-600 hover:underline">Listen Now</a>
+        </div>
+        <div class="text-center">
+          <img src="https://via.placeholder.com/300x300?text=Artist+2" alt="Artist 2" class="rounded-full mx-auto mb-4">
+          <h3 class="text-xl font-semibold">Artist Name 2</h3>
+          <p class="text-gray-600 mb-4">Rising star in Afro hip-hop.</p>
+          <a href="#" class="text-red-600 hover:underline">Listen Now</a>
+        </div>
+        <div class="text-center">
+          <img src="https://via.placeholder.com/300x300?text=Artist+3" alt="Artist 3" class="rounded-full mx-auto mb-4">
+          <h3 class="text-xl font-semibold">Artist Name 3</h3>
+          <p class="text-gray-600 mb-4">Soulful Afro R&B vocalist.</p>
+          <a href="#" class="text-red-600 hover:underline">Listen Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Releases Section -->
+  <section class="py-16 bg-gray-100">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">Latest Releases</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <img src="https://via.placeholder.com/300x300?text=Album+1" alt="Album 1" class="mx-auto mb-4">
+          <h3 class="text-xl font-semibold">"Song Title 1"</h3>
+          <p class="text-gray-600 mb-4">Artist Name 1</p>
+          <a href="#" class="text-red-600 hover:underline">Stream Now</a>
+        </div>
+        <div class="text-center">
+          <img src="https://via.placeholder.com/300x300?text=Album+2" alt="Album 2" class="mx-auto mb-4">
+          <h3 class="text-xl font-semibold">"Song Title 2"</h3>
+          <p class="text-gray-600 mb-4">Artist Name 2</p>
+          <a href="#" class="text-red-600 hover:underline">Stream Now</a>
+        </div>
+        <div class="text-center">
+          <img src="https://via.placeholder.com/300x300?text=Album+3" alt="Album 3" class="mx-auto mb-4">
+          <h3 class="text-xl font-semibold">"Song Title 3"</h3>
+          <p class="text-gray-600 mb-4">Artist Name 3</p>
+          <a href="#" class="text-red-600 hover:underline">Stream Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section id="about" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">About Us</h2>
+      <div class="mb-12">
+        <h3 class="text-2xl font-semibold mb-4">Our Story</h3>
+        <p class="text-gray-600">AHAVA Record Label is dedicated to discovering, developing, and promoting exceptional talent in Afro-centric music genres. Founded in 2015, our mission is to amplify unique voices and bring authentic sounds to the world.</p>
+      </div>
+      <div class="mb-12">
+        <h3 class="text-2xl font-semibold mb-4">Our Team</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <img src="https://via.placeholder.com/200x200?text=Team+Member+1" alt="Team Member 1" class="rounded-full mx-auto mb-4">
+            <h4 class="text-xl font-semibold">John Doe</h4>
+            <p class="text-gray-600">A&R Representative</p>
+          </div>
+          <div class="text-center">
+            <img src="https://via.placeholder.com/200x200?text=Team+Member+2" alt="Team Member 2" class="rounded-full mx-auto mb-4">
+            <h4 class="text-xl font-semibold">Jane Smith</h4>
+            <p class="text-gray-600">Producer</p>
+          </div>
+          <div class="text-center">
+            <img src="https://via.placeholder.com/200x200?text=Team+Member+3" alt="Team Member 3" class="rounded-full mx-auto mb-4">
+            <h4 class="text-xl font-semibold">Alex Johnson</h4>
+            <p class="text-gray-600">Marketing Lead</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-2xl font-semibold mb-4">Testimonials</h3>
+        <blockquote class="text-gray-600 italic">"AHAVA gave me the platform to share my music with the world. Their team is incredible!" — Artist Name 1</blockquote>
+        <blockquote class="text-gray-600 italic">"The support and creativity at AHAVA are unmatched." — Artist Name 2</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- Artists Section -->
+  <section id="artists" class="py-16 bg-gray-100">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">Our Artists</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Artist Name 1</h3>
+          <p class="text-gray-600 mb-4">Bio: A vibrant Afro pop artist known for energetic performances.</p>
+          <p class="text-gray-600 mb-4">Upcoming Shows: Oct 15, 2025 - Nairobi</p>
+          <a href="#" class="text-red-600 hover:underline">Listen on Spotify</a> | 
+          <a href="#" class="text-red-600 hover:underline">Follow on Instagram</a>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Artist Name 2</h3>
+          <p class="text-gray-600 mb-4">Bio: Afro hip-hop artist with a bold lyrical style.</p>
+          <p class="text-gray-600 mb-4">Upcoming Shows: Nov 10, 2025 - Lagos</p>
+          <a href="#" class="text-red-600 hover:underline">Listen on Apple Music</a> | 
+          <a href="#" class="text-red-600 hover:underline">Follow on Twitter</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Music Section -->
+  <section id="music" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">Our Music</h2>
+      <div class="mb-12">
+        <h3 class="text-2xl font-semibold mb-4">Latest Releases</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <img src="https://via.placeholder.com/300x300?text=Album+1" alt="Album 1" class="mx-auto mb-4">
+            <h4 class="text-xl font-semibold">"Song Title 1"</h4>
+            <p class="text-gray-600 mb-4">Artist Name 1</p>
+            <a href="#" class="text-red-600 hover:underline">Stream Now</a>
+          </div>
+          <div class="text-center">
+            <img src="https://via.placeholder.com/300x300?text=Album+2" alt="Album 2" class="mx-auto mb-4">
+            <h4 class="text-xl font-semibold">"Song Title 2"</h4>
+            <p class="text-gray-600 mb-4">Artist Name 2</p>
+            <a href="#" class="text-red-600 hover:underline">Stream Now</a>
+          </div>
+          <div class="text-center">
+            <img src="https://via.placeholder.com/300x300?text=Album+3" alt="Album 3" class="mx-auto mb-4">
+            <h4 class="text-xl font-semibold">"Song Title 3"</h4>
+            <p class="text-gray-600 mb-4">Artist Name 3</p>
+            <a href="#" class="text-red-600 hover:underline">Stream Now</a>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-2xl font-semibold mb-4">Genres</h3>
+        <div class="flex flex-wrap gap-4">
+          <span class="bg-red-600 text-white px-4 py-2 rounded-full">Afro Hip-Hop</span>
+          <span class="bg-red-600 text-white px-4 py-2 rounded-full">Afro R&B</span>
+          <span class="bg-red-600 text-white px-4 py-2 rounded-full">Afro Dancehall</span>
+          <span class="bg-red-600 text-white px-4 py-2 rounded-full">Afro Pop</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Submit Your Music Section -->
+  <section id="submit" class="py-16 bg-gray-100">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">Submit Your Music</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-2xl font-semibold mb-4">Submission Guidelines</h3>
+          <p class="text-gray-600 mb-4">We are looking for original music in Afro-centric genres. Submit high-quality recordings with a brief bio. Our A&R team will review your submission and contact you within 4-6 weeks.</p>
+        </div>
+        <div>
+          <h3 class="text-2xl font-semibold mb-4">Submission Form</h3>
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <input type="text" placeholder="Full Name" class="w-full p-3 mb-4 border rounded">
+            <input type="email" placeholder="Email Address" class="w-full p-3 mb-4 border rounded">
+            <select class="w-full p-3 mb-4 border rounded">
+              <option value="">Select Genre</option>
+              <option value="afro-hip-hop">Afro Hip-Hop</option>
+              <option value="afro-rnb">Afro R&B</option>
+              <option value="afro-dancehall">Afro Dancehall</option>
+              <option value="afro-pop">Afro Pop</option>
+            </select>
+            <input type="file" class="w-full p-3 mb-4 border rounded">
+            <button onclick="alert('Submission received! We will review and get back to you.')" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">Contact Us</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-2xl font-semibold mb-4">Get in Touch</h3>
+          <p class="text-gray-600 mb-4">Address: 123 Music Lane, Nairobi, Kenya</p>
+          <p class="text-gray-600 mb-4">Phone: +254 123 456 789</p>
+          <p class="text-gray-600 mb-4">Email: info@ahavarecords.com</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-red-600 hover:underline">Instagram</a>
+            <a href="#" class="text-red-600 hover:underline">Twitter</a>
+            <a href="#" class="text-red-600 hover:underline">Facebook</a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-2xl font-semibold mb-4">Send Us a Message</h3>
+          <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+            <input type="text" placeholder="Full Name" class="w-full p-3 mb-4 border rounded">
+            <input type="email" placeholder="Email Address" class="w-full p-3 mb-4 border rounded">
+            <textarea placeholder="Your Message" class="w-full p-3 mb-4 border rounded h-32"></textarea>
+            <button onclick="alert('Message sent! We will respond soon.')" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black text-white py-8">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <p>&copy; 2025 AHAVA Record Label. All rights reserved.</p>
+        </div>
+        <div class="flex space-x-4 justify-center">
+          <a href="#" class="text-red-600 hover:underline">Instagram</a>
+          <a href="#" class="text-red-600 hover:underline">Twitter</a>
+          <a href="#" class="text-red-600 hover:underline">Facebook</a>
+        </div>
+        <div class="text-center">
+          <a href="#home" class="text-red-600 hover:underline">Home</a> |
+          <a href="#about" class="text-red-600 hover:underline">About</a> |
+          <a href="#artists" class="text-red-600 hover:underline">Artists</a> |
+          <a href="#music" class="text-red-600 hover:underline">Music</a> |
+          <a href="#submit" class="text-red-600 hover:underline">Submit</a> |
+          <a href="#contact" class="text-red-600 hover:underline">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
